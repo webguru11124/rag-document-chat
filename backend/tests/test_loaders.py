@@ -39,6 +39,16 @@ def test_pdf_pages_keep_their_numbers():
     ]
 
 
+def test_pdf_line_wrapping_is_undone():
+    from app.loaders import _unwrap_pdf_lines
+
+    wrapped = "The primary goal of ap-\nplications is to fit\ngarments.\n\nNext paragraph."
+    assert (
+        _unwrap_pdf_lines(wrapped)
+        == "The primary goal of applications is to fit garments.\n\nNext paragraph."
+    )
+
+
 def test_unsupported_extension_is_rejected():
     with pytest.raises(UnsupportedFileError):
         load("tool.exe", b"MZ")

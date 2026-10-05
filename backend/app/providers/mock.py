@@ -98,17 +98,28 @@ def extractive_answer(prompt: str) -> str:
         return "I couldn't find anything about that in the uploaded documents."
 
     question_words = set(tokens(question))
-    picked: list[tuple[str, str]] = []
-    for number, text in passages[:3]:
-        sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", text) if len(s.strip()) > 20]
-        overlap = {s: len(question_words & set(tokens(s))) for s in sentences}
-        # Up to two best-matching sentences per passage, in their original order.
-        best = sorted((s for s in sentences if overlap[s]), key=lambda s: -overlap[s])[:2]
-        picked.extend((number, s) for s in sentences if s in best)
+    # (overlap, passage order, sentence order, passage number, sentence) for every sentence
+    candidates = []
+    for order, (number, text) in enumerate(passages):
+        sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", text) if len(s.strip()) > 30]
+        for position, sentence in enumerate(sentences):
+            overlap = len(question_words & set(tokens(sentence)))
+            if overlap:
+                candidates.append((overlap, order, position, number, sentence))
 
-    if not picked:
+    if not candidates:
         return "I couldn't find anything about that in the uploaded documents."
-    lines = [f"- {sentence} [{number}]" for number, sentence in picked]
+    # The best few sentences overall, at most two per passage, shown in document order.
+    best, per_passage = [], {}
+    for candidate in sorted(candidates, key=lambda c: (-c[0], c[1], c[2])):
+        if per_passage.get(candidate[3], 0) < 2:
+            best.append(candidate)
+            per_passage[candidate[3]] = per_passage.get(candidate[3], 0) + 1
+        if len(best) == 4:
+            break
+    lines = [
+        f"- {sentence} [{number}]" for _, _, _, number, sentence in sorted(best, key=lambda c: (c[1], c[2]))
+    ]
     return (
         "Here's what the documents say:\n\n"
         + "\n".join(lines)

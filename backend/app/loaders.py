@@ -63,7 +63,17 @@ def _load_pdf(data: bytes) -> list[Segment]:
         raise UnreadableFileError(f"This PDF looks damaged: {exc}") from exc
     if reader.is_encrypted and not reader.decrypt(""):
         raise UnreadableFileError("This PDF is password-protected.")
-    return [Segment(page.extract_text() or "", number) for number, page in enumerate(reader.pages, 1)]
+    return [
+        Segment(_unwrap_pdf_lines(page.extract_text() or ""), number)
+        for number, page in enumerate(reader.pages, 1)
+    ]
+
+
+def _unwrap_pdf_lines(text: str) -> str:
+    """PDF text breaks at every printed line. Rejoin words hyphenated across a line
+    break and turn single line breaks into spaces, keeping blank-line paragraph breaks."""
+    text = re.sub(r"(\w)-\n([a-z])", r"\1\2", text)
+    return re.sub(r"(?<!\n)\n(?!\n)", " ", text)
 
 
 def _load_docx(data: bytes) -> list[Segment]:
