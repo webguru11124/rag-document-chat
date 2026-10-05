@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Local data written by the backend (SQLite + Chroma)
+backend/data/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
