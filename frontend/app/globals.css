@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+/* System fonts: nothing to download at build time or on first paint. */
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  background: var(--color-zinc-50);
+  color: var(--color-zinc-900);
+  font-family: var(--font-sans);
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: var(--color-zinc-950);
+    color: var(--color-zinc-100);
+  }
+}
+
+/* Rendered answer markdown */
+.markdown {
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+
+  & > :first-child {
+    margin-top: 0;
+  }
+  & > :last-child {
+    margin-bottom: 0;
+  }
+  & p,
+  & ul,
+  & ol,
+  & pre,
+  & table,
+  & blockquote {
+    margin: 0.75em 0;
+  }
+  & ul {
+    list-style: disc;
+    padding-left: 1.4em;
+  }
+  & ol {
+    list-style: decimal;
+    padding-left: 1.4em;
+  }
+  & li + li {
+    margin-top: 0.25em;
+  }
+  & h1,
+  & h2,
+  & h3,
+  & h4 {
+    font-weight: 600;
+    margin: 1.1em 0 0.5em;
+    line-height: 1.3;
+  }
+  & h1 {
+    font-size: 1.25em;
+  }
+  & h2 {
+    font-size: 1.15em;
+  }
+  & h3,
+  & h4 {
+    font-size: 1em;
+  }
+  & strong {
+    font-weight: 600;
+  }
+  & a {
+    color: var(--color-indigo-600);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  & code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--color-zinc-100);
+    border-radius: 0.3em;
+    padding: 0.1em 0.35em;
+  }
+  & pre {
+    background: var(--color-zinc-100);
+    border-radius: 0.6em;
+    padding: 0.8em 1em;
+    overflow-x: auto;
+  }
+  & pre code {
+    background: none;
+    padding: 0;
+  }
+  & blockquote {
+    border-left: 3px solid var(--color-zinc-300);
+    padding-left: 0.9em;
+    color: var(--color-zinc-600);
+  }
+  & table {
+    display: block;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.9em;
+  }
+  & th,
+  & td {
+    border: 1px solid var(--color-zinc-200);
+    padding: 0.35em 0.7em;
+    text-align: left;
+  }
+  & th {
+    background: var(--color-zinc-50);
+    font-weight: 600;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .markdown {
+    & a {
+      color: var(--color-indigo-300);
+    }
+    & code,
+    & pre {
+      background: var(--color-zinc-800);
+    }
+    & blockquote {
+      border-color: var(--color-zinc-700);
+      color: var(--color-zinc-400);
+    }
+    & th,
+    & td {
+      border-color: var(--color-zinc-700);
+    }
+    & th {
+      background: var(--color-zinc-900);
+    }
+  }
+}
+
+/* Blinking caret at the end of an answer that's still streaming */
+.markdown.streaming > :last-child::after {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  margin-left: 0.15em;
+  vertical-align: -0.15em;
+  background: currentColor;
+  opacity: 0.6;
+  animation: caret 1s steps(2) infinite;
+}
+
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
